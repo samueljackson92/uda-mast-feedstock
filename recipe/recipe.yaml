@@ -1,0 +1,91 @@
+# uda-mast: the MAST/MAST-U helpers for pyuda (list_signals, latest_shot,
+# get_images, geometry, ...). Upstream publishes it to PyPI only; this
+# repackages that exact sdist for the ga-fdp channel so conda/pixi users can
+# install it next to conda-forge's pyuda:
+#
+#     conda install -c ga-fdp -c conda-forge uda-mast
+#
+# Built and published by .github/workflows/build.yaml.
+#
+# Written to conda-forge conventions (noarch, sdist source, python_min) so it
+# can go to conda-forge staged-recipes later. That additionally needs a
+# license file, which the sdist does not ship -- see about.license below.
+
+context:
+  name: uda-mast
+  version: "1.4.1"
+  # Upstream declares no requires-python. 3.10 is the oldest Python that
+  # conda-forge still builds pyuda, shapely 2 and py-opencv for.
+  python_min: "3.10"
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  url: https://pypi.org/packages/source/u/uda-mast/uda_mast-${{ version }}.tar.gz
+  sha256: 18109432edccaa07b1a42f80691538f9901eadb43bc81ca7a254f63774fd16fb
+  patches:
+    # Upstream requires opencv-python-headless, a pip-only distribution name.
+    # On conda the same cv2 module comes from py-opencv (a run requirement
+    # below). Without the patch the installed metadata names a distribution
+    # nothing provides, so `pip check` fails and a pixi env with any PyPI
+    # dependency on uda-mast would pull a second OpenCV in from PyPI.
+    - 0001-use-conda-opencv.patch
+
+build:
+  number: 0
+  noarch: python
+  # The sdist carries PKG-INFO and mast/_version.py, so setuptools_scm takes
+  # the version from there and needs no git metadata.
+  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python ${{ python_min }}.*
+    - pip
+    - setuptools >=42
+    - setuptools-scm >=6
+    - wheel
+  run:
+    - python >=${{ python_min }}
+    - pyuda
+    - shapely
+    - pandas
+    - numpy
+    - scipy
+    # cv2, for decoding camera frames in get_images. Imported lazily there.
+    - py-opencv
+  # matplotlib is only used by the geometry classes' optional plot()
+  # methods, imported inside them. Upstream does not require it; neither do we.
+
+tests:
+  - python:
+      imports:
+        - mast
+        - mast.geom
+      pip_check: true
+      python_version: ${{ python_min }}.*
+  - script:
+      # The point of the package: pyuda.Client() finds `mast` and registers
+      # the MAST helpers on itself. No server is needed to construct a client.
+      - python -c "import pyuda; c = pyuda.Client(); missing = {'list_signals', 'list_shots', 'latest_shot', 'latest_source_pass', 'get_images', 'geometry'} - set(c._registered_subclients); assert not missing, missing"
+      - python -c "import cv2, mast; print('uda-mast', mast.__version__, 'cv2', cv2.__version__)"
+      - python -c "import mast; assert mast.__version__ == '${{ version }}', mast.__version__"
+    requirements:
+      run:
+        - python ${{ python_min }}.*
+
+about:
+  homepage: https://users.mastu.ukaea.uk/data-access-and-tools/
+  documentation: https://users.mastu.ukaea.uk/data-access-and-tools/data-access/uda/
+  repository: https://git.ccfe.ac.uk/MAST-U/mastcodes
+  summary: MAST python wrapper for UDA
+  description: |
+    MAST/MAST-U helpers for the pyuda client: signal, source and shot
+    listings, latest shot and pass lookups, camera image retrieval and
+    machine geometry. When installed, pyuda.Client registers these methods
+    automatically.
+  # Apache-2.0 per the package metadata. The sdist ships no LICENSE file,
+  # so none is bundled; conda-forge would require one (license_file).
+  license: Apache-2.0

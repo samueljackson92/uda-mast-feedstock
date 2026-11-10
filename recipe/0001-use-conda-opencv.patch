@@ -1,0 +1,10 @@
+--- a/pyproject.toml	2026-07-03 09:52:23
++++ b/pyproject.toml	2026-11-10 15:56:28
+@@ -16,7 +16,6 @@
+     "pandas",
+     "numpy",
+     "scipy",
+-    "opencv-python-headless",
+     "pyuda"
+ ]
+ classifiers = [
