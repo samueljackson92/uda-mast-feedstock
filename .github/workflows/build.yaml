@@ -1,8 +1,8 @@
 name: uda-mast conda package
 
-# Repackages uda-mast (PyPI only upstream) for the ga-fdp channel.
+# Repackages uda-mast (PyPI only upstream) for the sljack Anaconda channel.
 #
-#   staging-X.Y.Z  -> build, test, upload to ga-fdp/label/staging
+#   staging-X.Y.Z  -> build, test, upload to sljack/label/staging
 #   release-X.Y.Z  -> relabel those exact bytes to main. NO rebuild.
 #
 # To ship a new upstream version: bump `version` and `sha256` in
@@ -18,6 +18,11 @@ on:
   pull_request:
     branches:
       - main
+
+# Anaconda.org account the package is published under. channel_tools.py
+# reads the same variable.
+env:
+  ANACONDA_OWNER: sljack
 
 jobs:
   build_and_test:
@@ -59,7 +64,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/staging-')
         run: |
           rattler-build upload anaconda \
-            --owner ga-fdp \
+            --owner "${ANACONDA_OWNER}" \
             --channel staging \
             --api-key ${{ secrets.ANACONDA_API_TOKEN }} \
             --force \

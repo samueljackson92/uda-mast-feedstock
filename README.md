@@ -3,10 +3,10 @@
 Conda packaging for [uda-mast](https://pypi.org/project/uda-mast/), UKAEA's
 MAST/MAST-U helpers for the [pyuda](https://github.com/ukaea/UDA) client.
 Upstream publishes uda-mast to PyPI only. This repo repackages that exact
-release for the `ga-fdp` Anaconda channel:
+release for the `sljack` Anaconda channel:
 
 ```bash
-conda install -c ga-fdp -c conda-forge uda-mast
+conda install -c sljack -c conda-forge uda-mast
 ```
 
 This pulls in `pyuda` from conda-forge. With `uda-mast` installed,
@@ -33,13 +33,13 @@ registering the MAST helpers, `cv2` importing, and the version matching.
 
 `.github/workflows/build.yaml` builds and tests every push and pull request.
 Publishing uses tags and needs the `ANACONDA_API_TOKEN` secret, which must be
-able to upload to `ga-fdp`:
+able to upload to `sljack`:
 
 1. Bump `version` and `sha256` in `recipe/recipe.yaml`. Refresh the patch if
    upstream's `pyproject.toml` changed. Reset `build.number` to 0.
-2. Push `staging-X.Y.Z`. This uploads to `ga-fdp/label/staging`:
+2. Push `staging-X.Y.Z`. This uploads to `sljack/label/staging`:
    ```bash
-   conda install -c ga-fdp/label/staging -c conda-forge uda-mast
+   conda install -c sljack/label/staging -c conda-forge uda-mast
    ```
 3. Push `release-X.Y.Z`. This moves those same files to `main` without
    rebuilding.

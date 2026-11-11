@@ -1,4 +1,4 @@
-"""Per-FILE label operations on the ga-fdp channel.
+"""Per-FILE label operations on an anaconda.org channel (owner: $ANACONDA_OWNER).
 
     python channel_tools.py retire  <package> <version-being-staged> <archive-dir>
     python channel_tools.py promote <package> <version>
@@ -7,7 +7,7 @@ Spec: docs/specs/2026-09-15-staging-and-promotion.md sections 4 and 5.
 
 WHY THIS EXISTS INSTEAD OF `anaconda move`
 ------------------------------------------
-`anaconda move --from-label staging --to-label main ga-fdp/pkg/X.Y.Z` does
+`anaconda move --from-label staging --to-label main <owner>/pkg/X.Y.Z` does
 not move X.Y.Z. It moves **everything in the source label**. Demonstrated
 against the live API: two versions in one label, "move" one, both moved.
 
@@ -37,7 +37,7 @@ import sys
 import urllib.error
 import urllib.request
 
-OWNER = os.environ.get("ANACONDA_OWNER", "ga-fdp")
+OWNER = os.environ.get("ANACONDA_OWNER", "sljack")
 STAGING = os.environ.get("STAGING_LABEL", "staging")
 PROTECTED = os.environ.get("PROTECTED_LABEL", "main")
 ATTIC = os.environ.get("ATTIC_LABEL", "attic")

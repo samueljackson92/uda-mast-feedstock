@@ -1,9 +1,9 @@
 # uda-mast: the MAST/MAST-U helpers for pyuda (list_signals, latest_shot,
 # get_images, geometry, ...). Upstream publishes it to PyPI only; this
-# repackages that exact sdist for the ga-fdp channel so conda/pixi users can
+# repackages that exact sdist for the sljack Anaconda channel so conda/pixi users can
 # install it next to conda-forge's pyuda:
 #
-#     conda install -c ga-fdp -c conda-forge uda-mast
+#     conda install -c sljack -c conda-forge uda-mast
 #
 # Built and published by .github/workflows/build.yaml.
 #
